@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Your Ticket</title>
+    <style>
+        body {
+            background: url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            width: 400px;
+            margin: 80px auto;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #e68900;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Book a Ticket</h2>
+    <form method="POST" action="/book">
+        <label for="transport">Transportation Type:</label>
+        <select id="transportType" name="transport" required>
+            <option value="Bus">Bus</option>
+            <option value="Train">Train</option>
+            <option value="Flight">Flight</option>
+        </select>
+
+        <label for="from">From:</label>
+        <select id="from" name="from" required></select>
+
+        <label for="to">To:</label>
+        <select id="to" name="to" required></select>
+
+        <label for="tripType">Trip Type:</label>
+        <select name="tripType" id="tripType" required onchange="toggleReturnDate()">
+            <option value="One Way">One Way</option>
+            <option value="Round Trip">Round Trip</option>
+        </select>
+
+        <label for="departureDate">Departure Date:</label>
+        <input id="startDate" type="date" name="departureDate" required>
+
+        <div id="returnDateDiv" style="display: none;">
+            <label for="returnDate">Return Date:</label>
+            <input id="returnDate" type="date" name="returnDate" required>
+        </div>
+
+        <label for="passengers">Number of Passengers:</label>
+        <input id="noOfPass" type="number" name="passengers" min="1" max="6" required>
+
+        <button onclick="enquirySubmit()" type="submit">Book Ticket</button>
+    </form>
+</div>
+
+<script>
+
+    
+    // Dynamically load "From" and "To" cities from backend
+    fetch('http://localhost:3999/gnana/fromToLocations')
+  .then(response => response.json())
+  .then(options => {
+    const from = document.getElementById('from');
+    const to = document.getElementById('to');
+    options.forEach(option => {
+      const opt1 = document.createElement('option');
+      opt1.value = option;
+      opt1.textContent = option;
+      from.appendChild(opt1);
+    const opt2 = document.createElement('option');
+      opt2.value = option;
+      opt2.textContent = option;
+      to.appendChild(opt2);
+    });
+  });
+
+    function toggleReturnDate() {
+        const tripType = document.getElementById("tripType").value;
+        const returnDateDiv = document.getElementById("returnDateDiv");
+        returnDateDiv.style.display = (tripType === "Round Trip") ? "block" : "none";
+    }
+
+    function enquirySubmit() {
+        const from = document.getElementById('from');
+        const to = document.getElementById('to');
+        const transportType = document.getElementById("transportType");
+        const tripType = document.getElementById("tripType");
+        const startDate = document.getElementById("startDate");
+        const returnDate = document.getElementById("returnDate");
+        const noOfPass = document.getElementById("noOfPass");
+        if (from.value == to.value) {  
+            window.alert(" Please select different from and to places");
+        }
+        else {const payload = {
+                    transportType: transportType.value,
+                    from: from.value,
+                    to: to.value,
+                    tripType: tripType.value,
+                    startDate: startDate.value,
+                    returnDate: returnDate.value,
+                    noOfPass: noOfPass.value
+                };
+
+    fetch('http://localhost:3999/gnana/ticketBooking', {
+                method: 'POST',
+                headers: {
+                        'Content-Type': 'application/json'
+                    },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                    if (response.ok) {
+                    console.log("Data submitted successfully!");
+                    } else {
+                    console.error("Error submitting data.");
+                }
+            })
+            .catch(error => console.error("Fetch error:", error));
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Flight Registration</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-image: url('https://wallpapers.com/images/high/4k-plane-2560-x-1440-background-nyp57gekd7c1l5ri.webp');
+      background-size: cover;
+      background-position: center;
+      height: 100vh;
+      color: #fff;
+    }
+
+    .form-container {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 30px;
+      max-width: 600px;
+      margin: 60px auto;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00d8ff;
+    }
+
+    label {
+      margin-top: 10px;
+      display: block;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+
+    button {
+      background-color: #00bcd4;
+      color: white;
+      padding: 12px;
+      width: 100%;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0097a7;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-container">
+    <h2>Flight Registration</h2>
+    <form id="flightForm">
+      <label for="flight_num">Flight Number:</label>
+      <input type="text" id="flight_num" required>
+
+      <label for="flight_type">Flight Type:</label>
+      <select name="flight_type" id="flight_type" required></select>
+
+      <label for="aircraft_type">Aircraft Type:</label>
+      <select name="aircraft_type" id="aircraft_type" required></select>
+
+      <label for="company_name">Company Name:</label>
+      <input type="text" id="company_name" required>
+
+      <label for="from_location">From:</label>
+      <select name="from" id="from_location" required></select>
+
+      <label for="to_location">To:</label>
+      <select name="to" id="to_location" required></select>
+
+      <label for="departure_date">Departure Date:</label>
+      <input type="date" id="departure_date" required>
+
+      <label for="departure_time">Departure Time:</label>
+      <input type="time" id="departure_time" required>
+
+      <label for="arrival_date">Arrival Date:</label>
+      <input type="date" id="arrival_date" required>
+
+      <label for="arrival_time">Arrival Time:</label>
+      <input type="time" id="arrival_time"required>
+
+      <button type="submit" onclick="flightRegSubmit()">Submit Flight</button>
+    </form>
+  </div>
+
+  <script>
+// Dynamically load from backend
+// FROM AND TO
+    fetch('http://localhost:3999/gnana/fromToLocations')
+  .then(response => response.json())
+  .then(options => {
+    const from = document.getElementById('from_location');
+    const to = document.getElementById('to_location');
+    options.forEach(option => {
+      const fromTo1 = document.createElement('option');
+      fromTo1.value = option;
+      fromTo1.textContent = option;
+      from.appendChild(fromTo1);
+    const fromTo2 = document.createElement('option');
+      fromTo2.value = option;
+      fromTo2.textContent = option;
+      to.appendChild(fromTo2);
+    });
+  });
+
+  // FLIGHT TYPES
+    fetch('http://localhost:3999/gnana/flightType')
+  .then(response => response.json())
+  .then(options => {
+    const flightType = document.getElementById('flight_type');
+    options.forEach(option => {
+      const flightTypes1 = document.createElement('option');
+      flightTypes1.value = option;
+      flightTypes1.textContent = option;
+      flightType.appendChild(flightTypes1);
+    });
+  });
+
+  // AIRCRAFT TYPES
+  fetch('http://localhost:3999/gnana/aircraftType')
+  .then(response => response.json())
+  .then(options => {
+    const aircraftType = document.getElementById('aircraft_type');
+    options.forEach(option => {
+      const aircraftTypes1 = document.createElement('option');
+      aircraftTypes1.value = option;
+      aircraftTypes1.textContent = option;
+      aircraftType.appendChild(aircraftTypes1);
+    });
+  });
+
+    function flightRegSubmit() {
+        if (document.getElementById('from_location').value == document.getElementById('to_location').value) {  
+            window.alert(" Please select different from and to places");
+        }
+        else {const payload = {
+                    flightNum: document.getElementById('flight_num').value,
+                    flightType: document.getElementById('flight_type').value,
+                    aircraftType: document.getElementById('aircraft_type').value,
+                    companyName: document.getElementById('company_name').value,
+                    fromLocation: document.getElementById('from_location').value,
+                    toLocation: document.getElementById('to_location').value,
+                    depatureDate: document.getElementById('departure_date').value,
+                    depatureTime: document.getElementById('departure_time').value,
+                    arrivalDate: document.getElementById('arrival_date').value,
+                    arrivalTime: document.getElementById('arrival_time').value
+                };
+
+    fetch('http://localhost:3999/gnana/flightRegistrationDetails', {
+                method: 'POST',
+                headers: {
+                        'Content-Type': 'application/json'
+                    },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                    if (response.ok) {
+                    console.log("Data submitted successfully!");
+                    } else {
+                    console.error("Error submitting data.");
+                }
+            })
+            .catch(error => console.error("Fetch error:", error));
+        }
+    }
+
+
+  </script>
+
+</body>
+</html>

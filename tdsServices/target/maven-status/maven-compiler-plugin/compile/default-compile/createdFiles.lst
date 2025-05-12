@@ -1,0 +1,11 @@
+gnana\dbContServ\services\interfaces\TicketBookingRepository.class
+gnana\dbContServ\services\interfaces\FlightRegistrationDetailsRepository.class
+gnana\config\CorsConfig.class
+gnana\dbContServ\dbEntities\TicketBooking.class
+gnana\dbContServ\controllers\FieldsController.class
+gnana\dbContServ\controllers\TicketBookingController.class
+gnana\dbContServ\services\TicketBookingService.class
+gnana\ApplicationController.class
+gnana\dbContServ\dbEntities\FlightRegistrationDetails.class
+gnana\dbContServ\services\FlightRegistrationDetailsService.class
+gnana\dbContServ\controllers\FlightRegistrationDetailsController.class
